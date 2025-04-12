@@ -15,7 +15,7 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 const upload = multer({ dest: uploadDir });
 
 // path to decks.json in your React app
-const JSON_PATH = path.resolve(__dirname, '../../src/data/decks.json');
+const JSON_PATH = path.resolve(__dirname, '../decks.json');
 const loadDecks = () => JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
 const saveDecks = (data) => fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
 
