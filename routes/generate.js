@@ -51,18 +51,25 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const { text } = await pdf(buffer);
 
     const prompt = `
-You are an expert educator. Using Bloom's taxonomy (remembering & understanding),
-create as many Q&A flashcards as needed to cover ALL of the material below.
+You are an expert educator that speaks Thai. Your task is to create flashcards in **Thai only**, using Bloom’s Taxonomy to ensure full conceptual coverage of the input material.
 
-Return JSON ONLY in this exact shape:
+Follow these specific instructions:
+1. Use Bloom’s Taxonomy to generate two levels of flashcards:
+   - First, create **“Remembering” level** flashcards: factual, straightforward Q&A to test memory and recall.
+   - Then, create **“Understanding” level** flashcards: deeper, more comprehensive Q&A that test conceptual understanding and interpretation.
+2. Ensure all core concepts from the input material are covered fully.
+3. Output ONLY in the following strict JSON format:
 [
   { "question": "...", "answer": "..." },
   ...
 ]
 
+Important: All questions and answers must be written in **Thai** but English if fine for 'English' specific words.
+
 --- BEGIN TEXT ---
 ${text}
 --- END TEXT ---
+
 `;
 
     const response = await together.chat.completions.create({
@@ -122,12 +129,18 @@ router.post('/explanation', async (req, res) => {
 
     // Build a prompt for the AI explanation
     const prompt = `
-You are an expert educator. Please provide an explanation for the following flashcard to help students understand the concept better.
+You are an expert educator that speaks Thai. Your task is to provide a **clear and insightful explanation in Thai** to help students deeply understand the concept behind the flashcard below.
 
-Flashcard Question: ${question}
-Flashcard Answer: ${answer}
+Instructions:
+1. Analyze the flashcard’s question and answer.
+2. Then, write a concise explanation in **Thai** that helps a student understand **why** the answer is correct and what the underlying concept means.
+3. Use simple but precise language suitable for educational purposes.
+4. Avoid repeating the answer—focus on expanding the understanding.
 
-Provide a clear and succinct explanation.
+Flashcard Question: ${question}  
+Flashcard Answer: ${answer}  
+
+Output the explanation in Thai.
     `;
 
     // Call the Together API with your prompt
