@@ -5,8 +5,17 @@ const path = require('path');
 const pdf = require('pdf-parse');
 const { v4: uuid } = require('uuid');
 const Together = require('together-ai');
-const fsPromises = require('fs').promises;
-const cors = require('cors');  // CORS package
+const cors = require('cors');  // Import the CORS package
+
+// Initialize express
+const app = express();
+
+// Enable CORS for all routes (you can restrict it to specific origins if needed)
+app.use(cors({
+  origin: 'https://brillian-flashcards.web.app',  // Replace with your frontend URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const router = express.Router();
 const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
@@ -16,30 +25,23 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const upload = multer({ dest: uploadDir });
 
+// path to decks.json in your React app
 const JSON_PATH = path.resolve(__dirname, '../decks.json');
-
-// Enable CORS for all routes
-router.use(cors({
-  origin: 'https://brillian-flashcards.web.app',  // Replace with your frontend's URL
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// Async load and save functions for better performance
-const loadDecks = async () => {
+const loadDecks = () => {
   try {
-    // Check if the file exists
     if (!fs.existsSync(JSON_PATH)) {
       console.error("decks.json does not exist. Creating an empty file.");
       // Create an empty JSON file if it doesn't exist
-      await fsPromises.writeFile(JSON_PATH, '[]');
+      fs.writeFileSync(JSON_PATH, '[]');
       return []; // Return an empty array
     }
 
-    const data = await fsPromises.readFile(JSON_PATH, 'utf8');
+    const data = fs.readFileSync(JSON_PATH, 'utf8');
+    console.log('decks.json content:', data);  // Log the content of the file
+
     const parsed = JSON.parse(data);
 
-    // Ensure parsed data is an array, otherwise default to empty array
+    // Ensure the parsed data is an array, otherwise default to empty array
     if (Array.isArray(parsed)) {
       return parsed;
     } else {
@@ -52,15 +54,15 @@ const loadDecks = async () => {
   }
 };
 
-const saveDecks = async (data) => {
+const saveDecks = (data) => {
   try {
-    await fsPromises.writeFile(JSON_PATH, JSON.stringify(data, null, 2));
+    fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
   } catch (error) {
     console.error("Error saving decks:", error);
   }
 };
 
-// Route to generate flashcards
+
 router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
   try {
     if (!req.file) throw new Error('No PDF uploaded');
@@ -112,8 +114,9 @@ ${text}
       due: today
     }));
 
-    const decks = await loadDecks();
-
+    const decks = loadDecks();
+    
+    // Ensure that decks is always an array before pushing
     if (Array.isArray(decks)) {
       const newDeck = {
         id: uuid(),
@@ -126,16 +129,11 @@ ${text}
         cards
       };
 
-      decks.push(newDeck);
-      await saveDecks(decks);
+      decks.push(newDeck);  // Now safely push new deck to decks
+      saveDecks(decks);      // Save the updated decks to the file
 
-      fs.unlink(req.file.path, (err) => {
-        if (err) {
-          console.error('Error deleting temp file:', err);
-        }
-      });
-
-      res.json(newDeck);
+      fs.unlink(req.file.path, () => {}); // clean temp file
+      res.json(newDeck);  // Send the new deck as response
     } else {
       throw new Error("Failed to load decks: decks is not an array.");
     }
@@ -143,9 +141,16 @@ ${text}
     console.error('generate-deck error:', err);
     res.status(500).json({ error: err.message });
   }
+
+  
 });
 
-// Route to generate explanation for flashcards (with the explanation generation logic)
+app.use('/api', router);
+
+app.listen(5000, () => {
+  console.log('Server is running on port 5000');
+});
+
 router.post('/explanation', async (req, res) => {
   try {
     const { question, answer } = req.body;
@@ -155,7 +160,7 @@ router.post('/explanation', async (req, res) => {
 
     // Build a prompt for the AI explanation
     const prompt = `
-You are an expert educator. Please provide an explanation for the following flashcard to help students understand the concept better.
+You are an expert educator. Please provide an explanation for the following flashcard to help students understand the concept better in Thai.
 
 Flashcard Question: ${question}
 Flashcard Answer: ${answer}
