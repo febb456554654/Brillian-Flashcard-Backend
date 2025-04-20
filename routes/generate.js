@@ -91,6 +91,7 @@ ${text}
       id: uuid(),
       question: c.question,
       answer: c.answer,
+      point: 0,  // Initialize the point field to 0
       repetitions: 0,
       interval: 0,
       ef: 2.5,
