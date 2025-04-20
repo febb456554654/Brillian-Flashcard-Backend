@@ -16,8 +16,30 @@ const upload = multer({ dest: uploadDir });
 
 // path to decks.json in your React app
 const JSON_PATH = path.resolve(__dirname, '../decks.json');
-const loadDecks = () => JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
-const saveDecks = (data) => fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
+const loadDecks = () => {
+  try {
+    const data = fs.readFileSync(JSON_PATH, 'utf8');
+    const parsed = JSON.parse(data);
+    // Ensure parsed data is an array
+    if (Array.isArray(parsed)) {
+      return parsed;
+    } else {
+      console.error("Invalid decks format in JSON, defaulting to empty array.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Error loading decks.json:", error);
+    return []; // Return an empty array if there's an error
+  }
+};
+
+const saveDecks = (data) => {
+  try {
+    fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error("Error saving decks:", error);
+  }
+};
 
 // SM-2 logic with 3 buttons
 function sm2(card, quality) {
@@ -59,17 +81,13 @@ Follow these specific instructions:
    - Then, create **“Understanding” level** flashcards: deeper, more comprehensive Q&A that test conceptual understanding and interpretation.
 2. Ensure all core concepts from the input material are covered fully.
 3. Output ONLY in the following strict JSON format:
-[
-  { "question": "...", "answer": "..." },
-  ...
-]
+[ { "question": "...", "answer": "..." }, ... ]
 
 Important: All questions and answers must be written in **Thai** but English if fine for 'English' specific words.
 
 --- BEGIN TEXT ---
 ${text}
 --- END TEXT ---
-
 `;
 
     const response = await together.chat.completions.create({
@@ -91,7 +109,6 @@ ${text}
       id: uuid(),
       question: c.question,
       answer: c.answer,
-      point: 0,  // Initialize the point field to 0
       repetitions: 0,
       interval: 0,
       ef: 2.5,
@@ -99,66 +116,32 @@ ${text}
     }));
 
     const decks = loadDecks();
-    const newDeck = {
-      id: uuid(),
-      name: req.body.deckName || req.file.originalname.replace(/\.pdf$/i, ''),
-      description: `Generated from ${req.file.originalname}`,
-      studied: false,
-      total: cards.length,
-      learned: 0,
-      due: cards.length,
-      cards
-    };
+    
+    // Ensure that decks is always an array before pushing
+    if (Array.isArray(decks)) {
+      const newDeck = {
+        id: uuid(),
+        name: req.body.deckName || req.file.originalname.replace(/\.pdf$/i, ''),
+        description: `Generated from ${req.file.originalname}`,
+        studied: false,
+        total: cards.length,
+        learned: 0,
+        due: cards.length,
+        cards
+      };
 
-    decks.push(newDeck);
-    saveDecks(decks);
+      decks.push(newDeck);  // Now safely push new deck to decks
+      saveDecks(decks);      // Save the updated decks to the file
 
-    fs.unlink(req.file.path, () => {}); // clean temp file
-    res.json(newDeck);
+      fs.unlink(req.file.path, () => {}); // clean temp file
+      res.json(newDeck);  // Send the new deck as response
+    } else {
+      throw new Error("Failed to load decks: decks is not an array.");
+    }
   } catch (err) {
     console.error('generate-deck error:', err);
     res.status(500).json({ error: err.message });
   }
 });
-
-router.post('/explanation', async (req, res) => {
-  try {
-    const { question, answer } = req.body;
-    if (!question || !answer) {
-      return res.status(400).json({ error: "Missing question or answer." });
-    }
-
-    // Build a prompt for the AI explanation
-    const prompt = `
-You are an expert educator that speaks Thai. Your task is to provide a **clear and insightful explanation in Thai** to help students deeply understand the concept behind the flashcard below.
-
-Instructions:
-1. Analyze the flashcard’s question and answer.
-2. Then, write a concise explanation in **Thai** that helps a student understand **why** the answer is correct and what the underlying concept means.
-3. Use simple but precise language suitable for educational purposes.
-4. Avoid repeating the answer—focus on expanding the understanding.
-
-Flashcard Question: ${question}  
-Flashcard Answer: ${answer}  
-
-Output the explanation in Thai.
-    `;
-
-    // Call the Together API with your prompt
-    const response = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 500,
-    });
-
-    // Extract and clean up the explanation text
-    const explanation = response.choices[0].message.content.trim();
-    res.json({ explanation });
-  } catch (err) {
-    console.error('AI explanation error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
-
 
 module.exports = router;
