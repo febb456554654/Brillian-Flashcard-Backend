@@ -29,9 +29,19 @@ const upload = multer({ dest: uploadDir });
 const JSON_PATH = path.resolve(__dirname, '../decks.json');
 const loadDecks = () => {
   try {
+    if (!fs.existsSync(JSON_PATH)) {
+      console.error("decks.json does not exist. Creating an empty file.");
+      // Create an empty JSON file if it doesn't exist
+      fs.writeFileSync(JSON_PATH, '[]');
+      return []; // Return an empty array
+    }
+
     const data = fs.readFileSync(JSON_PATH, 'utf8');
+    console.log('decks.json content:', data);  // Log the content of the file
+
     const parsed = JSON.parse(data);
-    // Ensure parsed data is an array, otherwise default to empty array
+
+    // Ensure the parsed data is an array, otherwise default to empty array
     if (Array.isArray(parsed)) {
       return parsed;
     } else {
