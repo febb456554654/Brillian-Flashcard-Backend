@@ -5,6 +5,17 @@ const path = require('path');
 const pdf = require('pdf-parse');
 const { v4: uuid } = require('uuid');
 const Together = require('together-ai');
+const cors = require('cors');  // Import the CORS package
+
+// Initialize express
+const app = express();
+
+// Enable CORS for all routes (you can restrict it to specific origins if needed)
+app.use(cors({
+  origin: 'https://brillian-flashcards.web.app',  // Replace with your frontend URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 const router = express.Router();
 const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
@@ -143,6 +154,14 @@ ${text}
     console.error('generate-deck error:', err);
     res.status(500).json({ error: err.message });
   }
+
+  
+});
+
+app.use('/api', router);
+
+app.listen(5000, () => {
+  console.log('Server is running on port 5000');
 });
 
 module.exports = router;
