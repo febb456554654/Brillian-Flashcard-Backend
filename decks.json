@@ -1,31 +1,33 @@
-{
-  "id": "1",
-  "name": "Biology",
-  "description": "Key facts about living organisms.",
-  "studied": false,
-  "total": 2,
-  "learned": 0,
-  "due": 2,
-  "cards": [
-    {
-      "id": "bio-1",
-      "question": "What is photosynthesis?",
-      "answer": "The process by which green plants convert sunlight into chemical energy.",
-      "point": 0,
-      "repetitions": 0,
-      "interval": 0,
-      "ef": 2.5,
-      "due": "2025-04-11"
-    },
-    {
-      "id": "bio-2",
-      "question": "What molecule carries genetic information?",
-      "answer": "DNA (Deoxyribonucleic acid).",
-      "point": 0,
-      "repetitions": 0,
-      "interval": 0,
-      "ef": 2.5,
-      "due": "2025-04-11"
-    }
-  ]
-}
+[
+  {
+    "id": "1",
+    "name": "Biology",
+    "description": "Key facts about living organisms.",
+    "studied": false,
+    "total": 2,
+    "learned": 0,
+    "due": 2,
+    "cards": [
+      {
+        "id": "bio-1",
+        "question": "What is photosynthesis?",
+        "answer": "The process by which green plants convert sunlight into chemical energy.",
+        "point": 0,
+        "repetitions": 0,
+        "interval": 0,
+        "ef": 2.5,
+        "due": "2025-04-11"
+      },
+      {
+        "id": "bio-2",
+        "question": "What molecule carries genetic information?",
+        "answer": "DNA (Deoxyribonucleic acid).",
+        "point": 0,
+        "repetitions": 0,
+        "interval": 0,
+        "ef": 2.5,
+        "due": "2025-04-11"
+      }
+    ]
+  }
+]
