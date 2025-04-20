@@ -20,16 +20,16 @@ const loadDecks = () => {
   try {
     const data = fs.readFileSync(JSON_PATH, 'utf8');
     const parsed = JSON.parse(data);
-    // Ensure parsed data is an array
+    // Ensure parsed data is an array, otherwise default to empty array
     if (Array.isArray(parsed)) {
       return parsed;
     } else {
       console.error("Invalid decks format in JSON, defaulting to empty array.");
-      return [];
+      return [];  // Return an empty array if the format is invalid
     }
   } catch (error) {
     console.error("Error loading decks.json:", error);
-    return []; // Return an empty array if there's an error
+    return []; // Return an empty array if there's an error reading the file
   }
 };
 
@@ -109,6 +109,7 @@ ${text}
       id: uuid(),
       question: c.question,
       answer: c.answer,
+      point: 0,  // Initialize the point field to 0
       repetitions: 0,
       interval: 0,
       ef: 2.5,
