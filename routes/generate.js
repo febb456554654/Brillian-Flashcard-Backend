@@ -51,8 +51,7 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const buffer = fs.readFileSync(req.file.path);
     const { text } = await pdf(buffer);
 
-    const prompt = `
-คุณเป็นผู้เชี่ยวชาญด้านการศึกษา (ภาษาไทย) งานของคุณคือสร้าง Flashcard
+    const prompt = `คุณเป็นผู้เชี่ยวชาญด้านการศึกษา (ภาษาไทย) งานของคุณคือสร้าง Flashcard
 จากเนื้อหาด้านล่าง **เป็นภาษาไทยทั้งหมด** และใช้ Bloom's Taxonomy
 เพื่อครอบคลุมแนวคิดหลักให้ครบถ้วน
 
@@ -61,24 +60,25 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
   {
     "question": "…",
     "answer": "…",
-    "keyword": "หนึ่งคำภาษาอังกฤษหรือไทยสั้น ๆ ที่สื่อภาพได้"
+    "keyword": "คำหรือวลีภาษาอังกฤษที่เหมาะสำหรับการค้นหารูปภาพ"
   },
   …
 ]
 
 **กฎสำคัญสำหรับ keyword**  
- ต้องสั้นที่สุด 1 คำ ไม่มีอักษรพิเศษหรือเครื่องหมายวรรคตอน และต้องเป็นคำภาษาอังกฤษ (สำหรับ keyword เท่านั้น)
- เลือกคำที่ Unplash ใช้ค้นรูปได้ตรงประเด็น  
- ใช้ภาษาอังกฤษเสมอ (เช่น “DNA”, “Photosynthesis”)  
- ห้ามเว้นบรรทัดหรือใส่คำอธิบายเพิ่ม
+- เขียนเป็นภาษาอังกฤษเท่านั้น (เช่น “Photosynthesis diagram”, “Neuron structure”)  
+- อนุญาตให้ใช้ **วลีสั้น ๆ** เพื่อให้ได้ภาพที่เหมาะสม  
+- ให้เลือกคำที่ **Google Images หรือ Unsplash ใช้ค้นรูปได้ตรงประเด็น**  
+- ห้ามมีอักษรพิเศษ ยกเว้นเว้นวรรคระหว่างคำ (ไม่มีอักขระพิเศษอื่น ๆ)  
+- ไม่มีบรรทัดใหม่หรือคำอธิบายเพิ่มเติม
 
-ขั้นตอน:  
+**ขั้นตอน:**  
 1. สร้าง flashcard ระดับ “Remembering” ก่อน  
 2. ต่อด้วย “Understanding”  
 3. ตรวจสอบว่า field ทั้ง 3 (question / answer / keyword) มีครบทุกออบเจ็กต์  
 
---- BEGIN TEXT ---
-${text}
+--- BEGIN TEXT ---  
+${text}  
 --- END TEXT ---
 `;
 
