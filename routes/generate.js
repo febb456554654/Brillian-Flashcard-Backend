@@ -68,7 +68,7 @@ Output **only** this JSON array—no commentary:
 ]
 
 Rules for keyword:
-• 1–3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images.
+• 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for significant to the answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
 • If needs_image is false, keyword can be empty or omitted.
 
 Steps:
@@ -80,7 +80,7 @@ Steps:
 --- BEGIN TEXT ---
 ${text}
 --- END TEXT ---
-`;;
+`;
 
     const response = await together.chat.completions.create({
       model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
@@ -97,17 +97,19 @@ ${text}
     }
 
     const today = new Date().toISOString().slice(0, 10);
+    const raw = JSON.parse(response.choices[0].message.content);
+
     const cards = await Promise.all(
-      cardsRaw.map(async (c) => {
-        // use English or fallback keyword logic here:
-        const keyword = c.keyword || c.answer.split(' ').slice(0,2).join(' ');
-        const image   = await fetchImage(keyword);
+      raw.map(async (c) => {
+        const kw   = c.needs_image ? c.keyword : '';
+        const img  = c.needs_image ? await fetchImage(kw) : null;
         return {
           id:        uuid(),
           question:  c.question,
           answer:    c.answer,
-          keyword,
-          image,      // now from Google CSE
+          keyword:   kw,
+          needs_image: c.needs_image,
+          image:     img,
           point:     0,
           repetitions:0,
           interval:  0,
