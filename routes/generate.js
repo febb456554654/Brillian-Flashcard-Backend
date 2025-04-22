@@ -97,28 +97,24 @@ ${text}
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    const cards = [];
-    for (const c of cardsRaw) {
-      const keyword = c.keyword || '';                // model produced
-      let image = null;
-      try {
-        if (keyword) image = await fetchImage(keyword);
-      } catch (e) {
-        console.warn('Image fetch failed for', keyword);
-      }
-      cards.push({
-        id: uuid(),
-        question: c.question,
-        answer: c.answer,
-        keyword,
-        image,                // may be null
-        point: 0,
-        repetitions: 0,
-        interval: 0,
-        ef: 2.5,
-        due: today
-      });
-    }
+    const cards = await Promise.all(
+      cardsRaw.map(async c => {
+        const keyword = c.keyword || c.answer.split(' ').slice(0,2).join(' ');
+        const image   = await fetchImage(keyword);
+        return {
+          id: uuid(),
+          question: c.question,
+          answer:   c.answer,
+          keyword,
+          image,
+          point: 0,
+          repetitions: 0,
+          interval: 0,
+          ef: 2.5,
+          due: today
+        };
+      })
+    );
 
     const decks = loadDecks();
     const newDeck = {
