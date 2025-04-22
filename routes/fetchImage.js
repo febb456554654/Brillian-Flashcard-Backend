@@ -1,34 +1,36 @@
 // lib/fetchImage.js
-require('dotenv').config();   // if you didn’t already load .env in server.js
+require('dotenv').config(); // only if you rely on a local .env in dev
 
 const axios = require('axios');
-const ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+const API_KEY = process.env.GOOGLE_API_KEY;
+const CX      = process.env.GOOGLE_CX;
 
-if (!ACCESS_KEY) {
-  console.warn('⚠️  Missing UNSPLASH_ACCESS_KEY – images will be null');
+if (!API_KEY || !CX) {
+  console.warn('⚠️ Missing GOOGLE_API_KEY or GOOGLE_CX – images will be null');
 }
 
 module.exports = async function fetchImage(keyword) {
-  if (!ACCESS_KEY) return null;
+  if (!API_KEY || !CX) return null;
 
   try {
-    const res = await axios.get('https://api.unsplash.com/search/photos', {
+    const res = await axios.get('https://www.googleapis.com/customsearch/v1', {
       params: {
-        query: keyword,
-        per_page: 1,
-        orientation: 'landscape',
-        content_filter: 'high'
+        key:       API_KEY,
+        cx:        CX,
+        q:         keyword,
+        searchType:'image',
+        num:       1,
+        safe:      'high',         // filter adult content
+        imgType:   'photo',        // get photos, not clip art
+        imgSize:   'medium',       // a good mid‑size image
       },
-      headers: {
-        Authorization: `Client-ID ${ACCESS_KEY}`
-      },
-      timeout: 5000
+      timeout: 5000,
     });
 
-    const photo = res.data.results[0];
-    return photo?.urls?.regular || null;
+    const item = res.data.items?.[0];
+    return item?.link || null;
   } catch (err) {
-    console.warn('fetchImage (Unsplash) failed for:', keyword, err.message);
+    console.warn('fetchImage (Google CSE) error for', keyword, err.message);
     return null;
   }
 };

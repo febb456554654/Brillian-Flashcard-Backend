@@ -98,20 +98,21 @@ ${text}
 
     const today = new Date().toISOString().slice(0, 10);
     const cards = await Promise.all(
-      cardsRaw.map(async c => {
+      cardsRaw.map(async (c) => {
+        // use English or fallback keyword logic here:
         const keyword = c.keyword || c.answer.split(' ').slice(0,2).join(' ');
         const image   = await fetchImage(keyword);
         return {
-          id: uuid(),
-          question: c.question,
-          answer:   c.answer,
+          id:        uuid(),
+          question:  c.question,
+          answer:    c.answer,
           keyword,
-          image,
-          point: 0,
-          repetitions: 0,
-          interval: 0,
-          ef: 2.5,
-          due: today
+          image,      // now from Google CSE
+          point:     0,
+          repetitions:0,
+          interval:  0,
+          ef:        2.5,
+          due:       today
         };
       })
     );
