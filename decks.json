@@ -1,49 +1,65 @@
 [
   {
-    "id": "demo-001",
-    "name": "ระบบสุริยะ (Solar System)",
-    "description": "ข้อเท็จจริงสำคัญเกี่ยวกับดาวเคราะห์และดวงอาทิตย์",
+    "id": "deck-1234",
+    "name": "พื้นฐานการสังเคราะห์แสง",
+    "description": "แนวคิดหลักเกี่ยวกับกระบวนการสังเคราะห์แสง",
     "studied": false,
-    "total": 3,
+    "total": 4,
     "learned": 0,
-    "due": 3,
+    "due": 4,
     "cards": [
       {
-        "id": "sol-1",
-        "question": "ดาวเคราะห์ดวงใดอยู่ใกล้ดวงอาทิตย์มากที่สุด?",
-        "answer": "ดาวพุธ (Mercury)",
-        "keyword": "Mercury planet",
-        "image": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.example.com%2Fmercury.jpg",
+        "id": "card-1",
+        "question": "กระบวนการสังเคราะห์แสงคืออะไร?",
+        "answer": "กระบวนการที่พืชเปลี่ยนพลังงานแสงเป็นพลังงานเคมี โดยใช้คลอโรฟิลล์",
+        "keyword": "photosynthesis diagram",
+        "needs_image": true,
+        "image": "https://picsum.photos/seed/photosynthesis-diagram/800/600",
         "point": 0,
         "repetitions": 0,
         "interval": 0,
         "ef": 2.5,
-        "due": "2025-04-12"
+        "due": "2025-04-29"
       },
       {
-        "id": "sol-2",
-        "question": "ดาวเคราะห์ดวงใดมีวงแหวนที่มองเห็นได้ชัดเจนที่สุด?",
-        "answer": "ดาวเสาร์ (Saturn)",
-        "keyword": "Saturn rings",
-        "image": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.example.com%2Fsaturn.jpg",
+        "id": "card-2",
+        "question": "ส่วนใดของเซลล์ประสาทที่รับสัญญาณ?",
+        "answer": "เดนไดรต์ (Dendrite) ทำหน้าที่รับสัญญาณจากเซลล์อื่น",
+        "keyword": "neuron structure diagram",
+        "needs_image": true,
+        "image": "https://picsum.photos/seed/neuron-structure-diagram/800/600",
         "point": 0,
         "repetitions": 0,
         "interval": 0,
         "ef": 2.5,
-        "due": "2025-04-12"
+        "due": "2025-04-29"
       },
       {
-        "id": "sol-3",
-        "question": "กระบวนการใดที่ทำให้ดวงอาทิตย์สร้างพลังงานได้?",
-        "answer": "ฟิวชันนิวเคลียร์ (Nuclear fusion)",
-        "keyword": "solar fusion",
-        "image": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.example.com%2Ffusion.jpg",
+        "id": "card-3",
+        "question": "วัฏจักรน้ำประกอบด้วยขั้นตอนใดบ้าง?",
+        "answer": "การระเหย การควบแน่น การตกตะกอน และการไหลกลับสู่แหล่งน้ำ",
+        "keyword": "water cycle diagram",
+        "needs_image": true,
+        "image": "https://picsum.photos/seed/water-cycle-diagram/800/600",
         "point": 0,
         "repetitions": 0,
         "interval": 0,
         "ef": 2.5,
-        "due": "2025-04-12"
+        "due": "2025-04-29"
+      },
+      {
+        "id": "card-4",
+        "question": "โครงสร้างของ DNA เป็นอย่างไร?",
+        "answer": "เป็นคู่เกลียวสองสายที่พันรอบกันโดยแรงยึดด้วยพันธะไฮโดรเจน",
+        "keyword": "DNA double helix diagram",
+        "needs_image": true,
+        "image": "https://picsum.photos/seed/dna-double-helix-diagram/800/600",
+        "point": 0,
+        "repetitions": 0,
+        "interval": 0,
+        "ef": 2.5,
+        "due": "2025-04-29"
       }
     ]
-  }
+  }  
 ]
