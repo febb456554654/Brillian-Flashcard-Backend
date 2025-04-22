@@ -51,37 +51,36 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const buffer = fs.readFileSync(req.file.path);
     const { text } = await pdf(buffer);
 
-    const prompt = `คุณเป็นผู้เชี่ยวชาญด้านการศึกษา (ภาษาไทย) งานของคุณคือสร้าง Flashcard
-จากเนื้อหาด้านล่าง **เป็นภาษาไทยทั้งหมด** และใช้ Bloom's Taxonomy
-เพื่อครอบคลุมแนวคิดหลักให้ครบถ้วน
+    const prompt = `
+You are an expert educator. From the input text below, generate flashcards in Thai using Bloom’s Taxonomy.
+For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding**.
+ 
+Output **only** this JSON array—no commentary:
 
-**รูปแบบผลลัพธ์ (ต้องเป็น JSON เพียว ๆ เท่านั้น)**  
 [
   {
-    "question": "…",
-    "answer": "…",
-    "keyword": "คำหรือวลีภาษาอังกฤษที่ใช้ในการค้นหารูปภาพที่จะทำให้ผู้ใช้คำตอบจากรูป"
+    "question": "...",
+    "answer": "...",
+    "keyword": "...",
+    "needs_image": true   // or false
   },
   …
 ]
 
-**กฎสำคัญสำหรับ keyword**  
-- เขียนเป็นภาษาอังกฤษเท่านั้น (เช่น “Photosynthesis diagram”, “Neuron structure”)  
-- อนุญาตให้ใช้ **วลีสั้น ๆ** เพื่อให้ได้ภาพที่เหมาะสม  
-- ให้เลือกคำที่ **Google Images ใช้ค้นรูปได้ตรงประเด็น** ซึ่งคำพวกนี้จะนำไปใช้หา diagram และรูปภาพที่ชัดเจนและเหมาะสมกับ question และ answer ที่กรอก
-- keyword ที่ใช้ในการค้นหาจะต้องเป็นคำที่ใช้ในการหารูปที่จะทำให้เข้าใจคำตอบได้แม้ว่ายังไม่ได้อ่าน 
-- ห้ามมีอักษรพิเศษ ยกเว้นเว้นวรรคระหว่างคำ (ไม่มีอักขระพิเศษอื่น ๆ)  
-- ไม่มีบรรทัดใหม่หรือคำอธิบายเพิ่มเติม
+Rules for keyword:
+• 1–3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images.
+• If needs_image is false, keyword can be empty or omitted.
 
-**ขั้นตอน:**  
-1. สร้าง flashcard ระดับ “Remembering” ก่อน  
-2. ต่อด้วย “Understanding”  
-3. ตรวจสอบว่า field ทั้ง 3 (question / answer / keyword) มีครบทุกออบเจ็กต์  
+Steps:
+1) Generate “Remembering” cards (factual Q&A).  
+2) Generate “Understanding” cards (conceptual Q&A).  
+3) For each, set needs_image to true **only** when a visual cue clearly maps to the concept.  
+4) Provide keyword only when needs_image=true.
 
---- BEGIN TEXT ---  
-${text}  
+--- BEGIN TEXT ---
+${text}
 --- END TEXT ---
-`;
+`;;
 
     const response = await together.chat.completions.create({
       model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
