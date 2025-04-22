@@ -5,6 +5,7 @@ const path = require('path');
 const pdf = require('pdf-parse');
 const { v4: uuid } = require('uuid');
 const Together = require('together-ai');
+const fetchImage = require('../lib/fetchImage');
 
 const router = express.Router();
 const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
@@ -59,10 +60,7 @@ Follow these specific instructions:
    - Then, create **“Understanding” level** flashcards: deeper, more comprehensive Q&A that test conceptual understanding and interpretation.
 2. Ensure all core concepts from the input material are covered fully.
 3. Output ONLY in the following strict JSON format:
-[
-  { "question": "...", "answer": "..." },
-  ...
-]
+[ { "question": "...", "answer": "...", "keyword": "single concise keyword" }, ... ]
 
 Important: All questions and answers must be written in **Thai** but English if fine for 'English' specific words.
 
@@ -87,16 +85,28 @@ ${text}
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    const cards = cardsRaw.map((c) => ({
-      id: uuid(),
-      question: c.question,
-      answer: c.answer,
-      point: 0,
-      repetitions: 0,
-      interval: 0,
-      ef: 2.5,
-      due: today
-    }));
+    const cards = [];
+    for (const c of cardsRaw) {
+      const keyword = c.keyword || '';                // model produced
+      let image = null;
+      try {
+        if (keyword) image = await fetchImage(keyword);
+      } catch (e) {
+        console.warn('Image fetch failed for', keyword);
+      }
+      cards.push({
+        id: uuid(),
+        question: c.question,
+        answer: c.answer,
+        keyword,
+        image,                // may be null
+        point: 0,
+        repetitions: 0,
+        interval: 0,
+        ef: 2.5,
+        due: today
+      });
+    }
 
     const decks = loadDecks();
     const newDeck = {
