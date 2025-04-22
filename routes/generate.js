@@ -53,7 +53,7 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
 
     const prompt = `
 You are an expert educator. From the input text below, generate flashcards in Thai using Bloom’s Taxonomy.
-For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding**.
+For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell.
  
 Output **only** this JSON array—no commentary:
 
@@ -68,7 +68,7 @@ Output **only** this JSON array—no commentary:
 ]
 
 Rules for keyword:
-• 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for significant to the answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
+• 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
 • If needs_image is false, keyword can be empty or omitted.
 
 Steps:
