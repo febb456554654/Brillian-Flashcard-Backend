@@ -5,7 +5,7 @@ const path = require('path');
 const pdf = require('pdf-parse');
 const { v4: uuid } = require('uuid');
 const Together = require('together-ai');
-const fetchImage = require('../lib/fetchImage');
+const fetchImage = require('../routes/fetchImage.js');
 
 const router = express.Router();
 const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
