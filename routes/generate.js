@@ -52,7 +52,7 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const { text } = await pdf(buffer);
 
     const prompt = `
-You are an expert educator. From the input text below, generate flashcards in Thai using Bloom’s Taxonomy.
+You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
 For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell or understand the answer by image.
  
 Output **only** this JSON array—no commentary:
