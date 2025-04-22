@@ -52,22 +52,34 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const { text } = await pdf(buffer);
 
     const prompt = `
-You are an expert educator that speaks Thai. Your task is to create flashcards in **Thai only**, using Bloom’s Taxonomy to ensure full conceptual coverage of the input material.
+คุณเป็นผู้เชี่ยวชาญด้านการศึกษา (ภาษาไทย) งานของคุณคือสร้าง Flashcard
+จากเนื้อหาด้านล่าง **เป็นภาษาไทยทั้งหมด** และใช้ Bloom's Taxonomy
+เพื่อครอบคลุมแนวคิดหลักให้ครบถ้วน
 
-Follow these specific instructions:
-1. Use Bloom’s Taxonomy to generate two levels of flashcards:
-   - First, create **“Remembering” level** flashcards: factual, straightforward Q&A to test memory and recall.
-   - Then, create **“Understanding” level** flashcards: deeper, more comprehensive Q&A that test conceptual understanding and interpretation.
-2. Ensure all core concepts from the input material are covered fully.
-3. Output ONLY in the following strict JSON format:
-[ { "question": "...", "answer": "...", "keyword": "single concise keyword" }, ... ]
+**รูปแบบผลลัพธ์ (ต้องเป็น JSON เพียว ๆ เท่านั้น)**  
+[
+  {
+    "question": "…",
+    "answer": "…",
+    "keyword": "หนึ่งคำภาษาอังกฤษหรือไทยสั้น ๆ ที่สื่อภาพได้"
+  },
+  …
+]
 
-Important: All questions and answers must be written in **Thai** but English if fine for 'English' specific words.
+**กฎสำคัญสำหรับ keyword**  
+ ต้องสั้นที่สุด 1-3 คำ ไม่มีอักษรพิเศษหรือเครื่องหมายวรรคตอน  
+ เลือกคำที่ Google / DuckDuckGo ใช้ค้นรูปได้ตรงประเด็น  
+ ถ้าเป็นคำเฉพาะทางให้ใช้ภาษาอังกฤษ (เช่น “DNA”, “Photosynthesis”)  
+ ห้ามเว้นบรรทัดหรือใส่คำอธิบายเพิ่ม
+
+ขั้นตอน:  
+1. สร้าง flashcard ระดับ “Remembering” ก่อน  
+2. ต่อด้วย “Understanding”  
+3. ตรวจสอบว่า field ทั้ง 3 (question / answer / keyword) มีครบทุกออบเจ็กต์  
 
 --- BEGIN TEXT ---
 ${text}
 --- END TEXT ---
-
 `;
 
     const response = await together.chat.completions.create({
