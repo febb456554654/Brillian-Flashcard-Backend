@@ -73,7 +73,8 @@ ${text}
     const response = await together.chat.completions.create({
       model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 4096
+      max_tokens: 4096,
+      timeout: 120_000 
     });
 
     let cardsRaw;
