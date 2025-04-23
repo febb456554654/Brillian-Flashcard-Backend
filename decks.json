@@ -4,9 +4,9 @@
     "name": "🪨 หินแสนสนุก",
     "description": "Flashcard หินแสนสนุก",
     "studied": false,
-    "total": 4,
-    "learned": 0,
-    "due": 4,
+    "total": 20,
+    "learned": 12,
+    "due": 8,
     "cards": [
       {
         "id": "card-1",
