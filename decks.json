@@ -51,7 +51,7 @@
         {
           "id": "card-4",
           "question": "หินอ่อนเป็นหินประเภทใด?",
-          "answer": "หินแปร",
+          "answer": "หินแปร แปรสภาพสัมผัส",
           "keyword": "แปร",
           "needs_image": true,
           "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/MarbleUSGOV.jpg/250px-MarbleUSGOV.jpg",
