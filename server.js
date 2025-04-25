@@ -2,11 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const generateRoute = require('./routes/generate');
-
-
-
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: 'https://brillian-flashcards.web.app',  
+  methods: ['GET','POST','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));  // enable preflight for every route
+
 app.use(express.json());
 app.use('/api', generateRoute);
 
