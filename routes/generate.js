@@ -135,7 +135,7 @@ ${text}
      // → Generate the stylized summary *once* at creation
     const summaryPrompt = `You are an expert educational writer and copyeditor, writing in clear, engaging Thai (except that any domain-specific English words or acronyms must be kept in English).
 
-Your task is to read the full text of the PDF (inserted below) and produce a **1-5 minute** study summary, **outputting only one JSON object** with a single `summaryHtml` field.  The value of `summaryHtml` must be a self-contained chunk of **semantic** HTML (no inline styles) that uses:
+Your task is to read the full text of the PDF (inserted below) and produce a **1-5 minute** study summary, **outputting only one JSON object** with a single 'summaryHtml' field.  The value of 'summaryHtml' must be a self-contained chunk of **semantic** HTML (no inline styles) that uses:
 
 - an '<h1>' for the main title  
 - '<h2>' for each major section  
@@ -155,11 +155,6 @@ Ensure the entire summary is in Thai (aside from any necessary English technical
 BEGIN RAW TEXT
 ${text}
 END RAW TEXT
-
-- **Semantic HTML** you can drop straight into a '<div dangerouslySetInnerHTML>' or into a Tailwind-styled '.prose' block.  
-- **Clear headings** and bullet lists that break the summary into digestible chunks.  
-- **Highlighted keywords** with '<strong>' so your users' eyes are drawn to the most important concepts (and they'll stick them in flashcards).  
-- Guaranteed output as a single JSON object with one field.
 `;
 
     const sumResp = await together.chat.completions.create({
