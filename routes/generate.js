@@ -124,12 +124,33 @@ ${text}
       id: uuid(),
       name: req.body.deckName || req.file.originalname.replace(/\.pdf$/i, ''),
       description: `Generated from ${req.file.originalname}`,
+      source_text: text,
       studied: false,
       total: cards.length,
       learned: 0,
       due: cards.length,
       cards
     };
+
+     // → Generate the stylized summary *once* at creation
+    const summaryPrompt = `
+You are an expert Thai educator and writer.
+Generate a 1-5 minute stylized summary of the Thai text below,
+using engaging headings, bullet points, and <strong>bold</strong> to highlight each flashcard’s keyword.
+
+--- SOURCE TEXT ---
+${text}
+--- END TEXT ---
+
+Output **only** the inner HTML (no wrapper tags).
+`;
+
+    const sumResp = await together.chat.completions.create({
+      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
+      messages: [{ role: 'user', content: summaryPrompt }],
+      max_tokens: 1500
+    });
+    newDeck.summaryHtml = sumResp.choices[0].message.content.trim();
 
     decks.push(newDeck);
     saveDecks(decks);
@@ -154,7 +175,7 @@ router.post('/explanation', async (req, res) => {
 You are an expert educator that speaks Thai. Your task is to provide a **clear and insightful explanation in Thai** to help students deeply understand the concept behind the flashcard below.
 
 Instructions:
-1. Analyze the flashcard’s question and answer.
+1. Analyze the flashcard's question and answer.
 2. Then, write a concise explanation in **Thai** that helps a student understand **why** the answer is correct and what the underlying concept means.
 3. Use simple but precise language suitable for educational purposes.
 4. Avoid repeating the answer—focus on expanding the understanding.
@@ -180,6 +201,15 @@ Output the explanation in Thai.
     res.status(500).json({ error: err.message });
   }
 });
+
+// GET /api/summarize-deck/:id
+router.get('/summarize-deck/:id', (req, res) => {
+  const decks = loadDecks();
+  const deck  = decks.find(d => d.id === req.params.id);
+  if (!deck)  return res.status(404).json({ error: 'Deck not found' });
+  return res.json({ summaryHtml: deck.summaryHtml || '' });
+});
+
 
 
 module.exports = router;
