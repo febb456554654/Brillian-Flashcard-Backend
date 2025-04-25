@@ -148,7 +148,7 @@ Your task is to read the full text of the PDF (inserted below) and produce a **1
 
 It should be fully stylized and focused on readability with html styling. Return something along the lines of:
 
-<h1>…</h1><p>…</p><h2>…</h2><ul><li>…</li>…</ul>… 
+<h1>...</h1><p>...<strong>...</strong></p><h2>...</h2><ul><li>...</li>...</ul>...
 
 But feel free to choose the styling that you think fits the topic and readability best.
 Ensure the entire summary is in Thai (aside from any necessary English technical terms or acronyms), and keep each section concise and scannable.
