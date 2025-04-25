@@ -55,21 +55,23 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
 You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
 For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell or understand the answer by image.
  
+- Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
+- Generate a one-sentence description of the deck (in Thai, aside from any English terms).
+
 Output **only** this JSON array—no commentary:
 
-[
-  {
-    "question": "...",
-    "answer": "...",
-    "keyword": "...",
-    "needs_image": true   // or false
-  },
-  …
-]
+{
+  "title": "💡 ชื่อสั้นๆ",
+  "description": "คำอธิบายสั้นๆ ในภาษาไทย",
+  "cards": [
+    { "question": "...", "answer": "...", "keyword": "...", "needs_image": true },
+    ...
+  ]
+}
 
 Rules for keyword:
-• 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
-• If needs_image is false, keyword can be empty or omitted.
+- 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
+- If needs_image is false, keyword can be empty or omitted.
 
 Steps:
 1) Generate “Remembering” cards (factual Q&A).  
@@ -97,38 +99,44 @@ ${text}
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    const raw = JSON.parse(response.choices[0].message.content);
+    let deckRaw;
+      try {
+        deckRaw = JSON.parse(response.choices[0].message.content);
+      } catch(e) {
+        console.error('Invalid model response:', response.choices[0].message.content);
+        throw new Error('Model did not return valid JSON');
+      }
 
     const cards = await Promise.all(
-      raw.map(async (c) => {
-        const kw   = c.needs_image ? c.keyword : '';
-        const img  = c.needs_image ? await fetchImage(kw) : null;
+      deckRaw.cards.map(async (c) => {
+        const img = c.needs_image
+          ? await fetchImage(c.keyword)
+          : null;
         return {
-          id:        uuid(),
-          question:  c.question,
-          answer:    c.answer,
-          keyword:   kw,
-          needs_image: c.needs_image,
-          image:     img,
-          point:     0,
+          id:         uuid(),
+          question:   c.question,
+          answer:     c.answer,
+          keyword:    c.keyword,
+          needs_image:c.needs_image,
+          image:      img,
+          point:      0,
           repetitions:0,
-          interval:  0,
-          ef:        2.5,
-          due:       today
+          interval:   0,
+          ef:         2.5,
+          due:        today
         };
       })
     );
 
     const decks = loadDecks();
     const newDeck = {
-      id: uuid(),
-      name: req.body.deckName || req.file.originalname.replace(/\.pdf$/i, ''),
-      description: `Generated from ${req.file.originalname}`,
-      source_text: text,
-      studied: false,
-      total: cards.length,
-      learned: 0,
-      due: cards.length,
+      id:          uuid(),
+      name:        deckRaw.title,
+      description: deckRaw.description,
+      studied:     false,
+      total:       cards.length,
+      learned:     0,
+      due:         cards.length,
       cards
     };
 
