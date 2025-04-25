@@ -136,7 +136,8 @@ ${text}
     const summaryPrompt = `
 You are an expert Thai educator and writer.
 Generate a 1-5 minute stylized summary of the Thai text below,
-using engaging headings, bullet points, and <strong>bold</strong> to highlight each flashcard’s keyword.
+using engaging headings, bullet points, and <strong>bold</strong> to highlight each flashcard's keyword.
+Write the summarization in the Thai language.
 
 --- SOURCE TEXT ---
 ${text}
