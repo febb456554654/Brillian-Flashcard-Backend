@@ -61,7 +61,7 @@ For each flashcard, decide **if a visual (photo, diagram, or icon) would signifi
 Output **only** this JSON array—no commentary:
 
 {
-  "title": "💡 ชื่อสั้นๆ",
+  "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
   "description": "คำอธิบายสั้นๆ ในภาษาไทย",
   "cards": [
     { "question": "...", "answer": "...", "keyword": "...", "needs_image": true },
