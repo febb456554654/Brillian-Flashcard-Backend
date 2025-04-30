@@ -20,7 +20,7 @@ const JSON_PATH = path.resolve(__dirname, '../decks.json');
 const loadDecks = () => JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
 const saveDecks = (data) => fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
 
-// SM-2 logic with 3 buttons
+// SM-2 logic with 3 button
 function sm2(card, quality) {
   if (quality < 3) {
     card.repetitions = 0;
