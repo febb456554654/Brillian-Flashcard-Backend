@@ -299,6 +299,14 @@ A: ${answer}
     try { raw = JSON.parse(resp.choices[0].message.content); }
     catch { throw new Error('LLM did not return valid JSON'); }
 
+    if (Array.isArray(raw)) {
+      // OK
+    } else if (raw.cards && Array.isArray(raw.cards)) {
+      raw = raw.cards;               // model used a wrapper object
+    } else {
+      throw new Error('LLM did not return an array');
+    }
+
     /* ---------- 2. Enrich each card ---------- */
     const cards = await Promise.all(raw.map(hydrateCard));
 
