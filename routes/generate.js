@@ -85,7 +85,7 @@ ${text}
 `;
 
     const response = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
+      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 4096
     });
