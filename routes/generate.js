@@ -264,7 +264,7 @@ router.post('/related-cards', async (req, res) => {
     /* ---------- 1. Ask the LLM for extra cards ---------- */
     const prompt = `
 You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy (Remember / Understand / Apply).
-For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell or understand the answer by image.
+For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads.
  
 - Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
 - Generate a one-sentence description of the deck (in Thai, aside from any English terms).
