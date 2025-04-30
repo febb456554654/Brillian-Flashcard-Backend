@@ -64,14 +64,18 @@ Output **only** this JSON array—no commentary:
   "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
   "description": "คำอธิบายสั้นๆ ในภาษาไทย",
   "cards": [
-    { "question": "...", "answer": "...", "keyword": "...", "needs_image": true },
+    { "question": "...", 
+     "answer": "...", 
+     "keyword": "...", 
+     "needs_image": true // or false
+     },
     ...
   ]
 }
 
 Rules for keyword:
 - 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
-- If needs_image is false, keyword can be empty or omitted.
+- If you decided that needs_image is false (or this flashcard doesn't need an image), keyword can be empty or omitted.
 
 Steps:
 1) Generate “Remembering” cards (factual Q&A).  
@@ -85,7 +89,7 @@ ${text}
 `;
 
     const response = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
+      model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 4096
     });
