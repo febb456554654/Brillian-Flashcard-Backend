@@ -7,6 +7,8 @@ const { v4: uuid } = require('uuid');
 const Together = require('together-ai');
 const fetchImage = require('../routes/fetchImage.js');
 
+const { Readable } = require("stream");
+
 const router = express.Router();
 const together = new Together({ apiKey: process.env.TOGETHER_API_KEY });
 
@@ -44,104 +46,104 @@ function sm2(card, quality) {
   return card;
 }
 
+
 router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
+  /* ─────────── 0.  SSE boilerplate ─────────── */
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection',  'keep-alive');
+  res.flushHeaders();
+
+  const send = (evt, data) =>
+    res.write(`event:${evt}\ndata:${JSON.stringify(data)}\n\n`);
+
   try {
+    /* ─────────── 1.  Parse PDF ─────────── */
     if (!req.file) throw new Error('No PDF uploaded');
-
-    const buffer = fs.readFileSync(req.file.path);
+    const buffer   = fs.readFileSync(req.file.path);
     const { text } = await pdf(buffer);
+    send('progress', { step: 'pdfParsed' });
 
+    /* ─────────── 2.  First LLM call (stream) ─────────── */
     const prompt = `
-You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
-For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell or understand the answer by image.
- 
-- Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
-- Generate a one-sentence description of the deck (in Thai, aside from any English terms).
-
-Output **only** this JSON array—no commentary:
-
-{
-  "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
-  "description": "คำอธิบายสั้นๆ ในภาษาไทย",
-  "cards": [
-    { "question": "...", "answer": "...", "keyword": "...", "needs_image": true },
-    ...
-  ]
-}
-
-Rules for keyword:
-- 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
-- If needs_image is false, keyword can be empty or omitted.
-
-Steps:
-1) Generate “Remembering” cards (factual Q&A).  
-2) Generate “Understanding” cards (conceptual Q&A).  
-3) For each, set needs_image to true **only** when a visual cue clearly maps to the concept.  
-4) Provide keyword only when needs_image=true.
-
---- BEGIN TEXT ---
-${text}
---- END TEXT ---
-`;
-
-    const response = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 4096
+    You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
+    For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell or understand the answer by image.
+     
+    - Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
+    - Generate a one-sentence description of the deck (in Thai, aside from any English terms).
+    
+    Output **only** this JSON array—no commentary:
+    
+    {
+      "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
+      "description": "คำอธิบายสั้นๆ ในภาษาไทย",
+      "cards": [
+        { "question": "...", "answer": "...", "keyword": "...", "needs_image": true },
+        ...
+      ]
+    }
+    
+    Rules for keyword:
+    - 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
+    - If needs_image is false, keyword can be empty or omitted.
+    
+    Steps:
+    1) Generate “Remembering” cards (factual Q&A).  
+    2) Generate “Understanding” cards (conceptual Q&A).  
+    3) For each, set needs_image to true **only** when a visual cue clearly maps to the concept.  
+    4) Provide keyword only when needs_image=true.
+    
+    --- BEGIN TEXT ---
+    ${text}
+    --- END TEXT ---
+    `;            // ⬅ keep your existing prompt builder
+    const resp   = await together.chat.completions.create({
+      model      : 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
+      stream     : true,
+      messages   : [{ role: 'user', content: prompt }],
+      max_tokens : 4096
     });
 
-    let cardsRaw;
+    let rawJSON = '';
+    for await (const chunk of Readable.from(resp.body)) {
+      const token = chunk.toString('utf8');
+      rawJSON   += token;
+      send('partial', token);                          // browser sees live tokens
+    }
+    send('progress', { step: 'deckObjReady' });
+
+    /* ─────────── 3.  Build deck object ─────────── */
+    let deckRaw;
     try {
-      cardsRaw = JSON.parse(response.choices[0].message.content);
+      deckRaw = JSON.parse(rawJSON.trim());
     } catch (e) {
-      console.error('Invalid model response:', response.choices[0].message.content);
       throw new Error('Model did not return valid JSON');
     }
 
     const today = new Date().toISOString().slice(0, 10);
-    let deckRaw;
-      try {
-        deckRaw = JSON.parse(response.choices[0].message.content);
-      } catch(e) {
-        console.error('Invalid model response:', response.choices[0].message.content);
-        throw new Error('Model did not return valid JSON');
-      }
-
     const cards = await Promise.all(
-      deckRaw.cards.map(async (c) => {
-        const img = c.needs_image
-          ? await fetchImage(c.keyword)
-          : null;
+      deckRaw.cards.map(async (c, i) => {
+        const img = c.needs_image ? await fetchImage(c.keyword) : null;
+        send('progress',
+             { step: 'imageFetched', card: i + 1, total: deckRaw.cards.length });
         return {
-          id:         uuid(),
-          question:   c.question,
-          answer:     c.answer,
-          keyword:    c.keyword,
-          needs_image:c.needs_image,
-          image:      img,
-          point:      0,
-          repetitions:0,
-          interval:   0,
-          ef:         2.5,
-          due:        today
+          id          : uuid(),
+          question    : c.question,
+          answer      : c.answer,
+          keyword     : c.keyword,
+          needs_image : c.needs_image,
+          image       : img,
+          point       : 0,
+          repetitions : 0,
+          interval    : 0,
+          ef          : 2.5,
+          due         : today
         };
       })
     );
 
-    const decks = loadDecks();
-    const newDeck = {
-      id:          uuid(),
-      name:        deckRaw.title,
-      description: deckRaw.description,
-      studied:     false,
-      total:       cards.length,
-      learned:     0,
-      due:         cards.length,
-      cards
-    };
-
-     // → Generate the stylized summary *once* at creation
-    const summaryPrompt = `You are an expert educational writer and copyeditor, writing in clear, engaging Thai (except that any domain-specific English words or acronyms must be kept in English).
+    /* ─────────── 4.  Summary (non-stream call, short) ─────────── */
+    const sumPrompt = `You are an expert educational writer and copyeditor, writing in clear, engaging Thai (except that any domain-specific English words or acronyms must be kept in English).
 
 Your task is to read the full text of the PDF (inserted below) and produce a **1-5 minute** study summary, the output must be a self-contained chunk of **semantic** HTML (no inline styles) that uses:
 
@@ -164,25 +166,42 @@ Ensure the entire summary is in Thai (aside from any necessary English technical
 BEGIN RAW TEXT
 ${text}
 END RAW TEXT
-`;
-
-    const sumResp = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
-      messages: [{ role: 'user', content: summaryPrompt }],
-      max_tokens: 1500
+`;      // ⬅ your existing prompt
+    const sumResp   = await together.chat.completions.create({
+      model      : 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
+      messages   : [{ role: 'user', content: sumPrompt }],
+      max_tokens : 1500
     });
-    newDeck.summaryHtml = sumResp.choices[0].message.content.trim();
+    send('progress', { step: 'summaryReady' });
 
+    /* ─────────── 5.  Persist & finish ─────────── */
+    const decks    = loadDecks();
+    const newDeck  = {
+      id          : uuid(),
+      name        : deckRaw.title,
+      description : deckRaw.description,
+      studied     : false,
+      total       : cards.length,
+      learned     : 0,
+      due         : cards.length,
+      summaryHtml : sumResp.choices[0].message.content.trim(),
+      cards
+    };
     decks.push(newDeck);
     saveDecks(decks);
 
-    fs.unlink(req.file.path, () => {}); // clean temp file
-    res.json(newDeck);
+    send('complete', newDeck);                         // final payload
+    res.end();
   } catch (err) {
     console.error('generate-deck error:', err);
-    res.status(500).json({ error: err.message });
+    send('error', { message: err.message });
+    res.end();
+  } finally {
+    // tidy temp file even if we crashed
+    if (req.file) fs.unlink(req.file.path, () => {});
   }
 });
+
 
 router.post('/explanation', async (req, res) => {
   try {
