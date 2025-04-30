@@ -20,6 +20,8 @@ const JSON_PATH = path.resolve(__dirname, '../decks.json');
 const loadDecks = () => JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
 const saveDecks = (data) => fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
 
+const todayIso = () => new Date().toISOString().slice(0, 10);
+
 // SM-2 logic with 3 button
 function sm2(card, quality) {
   if (quality < 3) {
@@ -233,6 +235,61 @@ router.get('/summarize-deck/:id', (req, res) => {
   const deck  = decks.find(d => d.id === req.params.id);
   if (!deck)  return res.status(404).json({ error: 'Deck not found' });
   return res.json({ summaryHtml: deck.summaryHtml || '' });
+});
+
+// helper: seed SM-2 fields + optional image
+async function hydrateCard(c) {
+  const img = c.needs_image ? await fetchImage(c.keyword) : null;
+  return {
+    id: uuid(),
+    question: c.question,
+    answer:   c.answer,
+    keyword:  c.keyword,
+    needs_image: c.needs_image,
+    image:    img,
+    point: 0,
+    repetitions: 0,
+    interval: 0,
+    ef: 2.5,
+    due: todayIso(),
+  };
+}
+
+router.post('/related-cards', async (req, res) => {
+  try {
+    const { question, answer } = req.body;
+    if (!question || !answer)
+      return res.status(400).json({ error: 'Missing question or answer' });
+
+    /* ---------- 1. Ask the LLM for extra cards ---------- */
+    const prompt = `
+คุณเป็นครูผู้เชี่ยวชาญ จงสร้าง flashcard ภาษาไทยแบบสั้น ๆ เพิ่ม 4-6 ใบ
+เพื่อขยายแนวคิดเดียวกับ flashcard ด้านล่าง (Remember / Understand / Apply)
+คืนค่าเป็น JSON array ของวัตถุ
+{question, answer, keyword, needs_image}
+
+flashcard ต้นฉบับ:
+Q: ${question}
+A: ${answer}`.trim();
+
+    const resp = await together.chat.completions.create({
+      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 1200,
+    });
+
+    let raw;
+    try { raw = JSON.parse(resp.choices[0].message.content); }
+    catch { throw new Error('LLM did not return valid JSON'); }
+
+    /* ---------- 2. Enrich each card ---------- */
+    const cards = await Promise.all(raw.map(hydrateCard));
+
+    res.json({ cards });
+  } catch (err) {
+    console.error('related-cards error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
