@@ -272,7 +272,7 @@ For each flashcard, decide **if a visual (photo, diagram, or icon) would signifi
 
 Output **only** this JSON array—no commentary:
 [
-  { "question": "...", "answer": "...", "keyword": "...", "needs_image": true|false },
+  { "question": "...", "answer": "...", "keyword": "...", "needs_image": false // or true },
   …
 ]
 
