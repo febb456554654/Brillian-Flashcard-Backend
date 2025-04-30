@@ -263,14 +263,37 @@ router.post('/related-cards', async (req, res) => {
 
     /* ---------- 1. Ask the LLM for extra cards ---------- */
     const prompt = `
-คุณเป็นครูผู้เชี่ยวชาญ จงสร้าง flashcard ภาษาไทยแบบสั้น ๆ เพิ่ม 4-6 ใบ
-เพื่อขยายแนวคิดเดียวกับ flashcard ด้านล่าง (Remember / Understand / Apply)
-คืนค่าเป็น JSON array ของวัตถุ
-{question, answer, keyword, needs_image}
+You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy (Remember / Understand / Apply).
+For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell or understand the answer by image.
+ 
+- Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
+- Generate a one-sentence description of the deck (in Thai, aside from any English terms).
+- Generate only 3 - 6 Flashcards
 
+Output **only** this JSON array—no commentary:
+
+    { "question": "...", 
+     "answer": "...", 
+     "keyword": "...", 
+     "needs_image": true // or false
+     },
+    ...
+
+Rules for keyword:
+- 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
+- If you decided that needs_image is false, keyword can be empty or omitted.
+
+Steps:
+1) Generate Flashcards to let the user further understand the flashcard below using Bloom's Taxonomy (Remember / Understand / Apply)
+2) For each, set needs_image to true **only** when a visual cue clearly maps to the concept.  
+3) Provide keyword only when needs_image=true.
+
+--- BEGIN TEXT ---
 flashcard ต้นฉบับ:
 Q: ${question}
-A: ${answer}`.trim();
+A: ${answer}
+--- END TEXT ---
+`.trim();
 
     const resp = await together.chat.completions.create({
       model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
