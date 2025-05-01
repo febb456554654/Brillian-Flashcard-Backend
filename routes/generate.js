@@ -206,6 +206,7 @@ Instructions:
 2. Then, write a concise explanation in **Thai** that helps a student understand **why** the answer is correct and what the underlying concept means.
 3. Use simple but precise language suitable for educational purposes.
 4. Avoid repeating the answer—focus on expanding the understanding.
+5. Don't make it too long, not longer than 2 paragraphs.
 
 Flashcard Question: ${question}  
 Flashcard Answer: ${answer}  
@@ -217,7 +218,7 @@ Output the explanation in Thai.
     const response = await together.chat.completions.create({
       model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 500,
+      max_tokens: 250,
     });
 
     // Extract and clean up the explanation text
