@@ -6,7 +6,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 const CX      = process.env.GOOGLE_CX;
 
 if (!API_KEY || !CX) {
-  console.warn('⚠️ Missing GOOGLE_API_KEY or GOOGLE_CX – images will be null');
+  console.warn('⚠️ Missing GOOGLE_API_KEY or GOOGLE_CX - images will be null');
 }
 
 module.exports = async function fetchImage(keyword) {
