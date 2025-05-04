@@ -91,7 +91,7 @@ ${text}
 `;
 
     const response = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-70b-instruct',
+      model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 4096
     });
@@ -173,7 +173,7 @@ END RAW TEXT
 `;
 
     const sumResp = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
+      model: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
       messages: [{ role: 'user', content: summaryPrompt }],
       max_tokens: 1500
     });
@@ -216,7 +216,7 @@ Output the explanation in Thai.
 
     // Call the Together API with your prompt
     const response = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
+      model: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 250,
     });
@@ -294,7 +294,7 @@ A: ${answer}
 `.trim();
 
     const resp = await together.chat.completions.create({
-      model: 'scb10x/scb10x-llama3-1-typhoon2-8b-instruct',
+      model: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1200,
     });
