@@ -53,37 +53,36 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const buffer = fs.readFileSync(req.file.path);
     const { text } = await pdf(buffer);
 
-    const prompt = `
-You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
-For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads** the goal is for the user to be able to visualize the answer aswell or understand the answer by image.
- 
-- Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
-- Generate a one-sentence description of the deck (in Thai, aside from any English terms).
+    const prompt = `You are an expert educator specializing in creating effective learning materials. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
 
-Output **only** this JSON array—no commentary and absolutely nothing else:
+For each flashcard, carefully consider whether a visual (photo, diagram, illustration, or icon) would **significantly enhance comprehension and memorability**, enabling the user to easily visualize the concept or the answer. The goal is to provide keywords that will yield effective visual search results, directly representing the concept or answer.
+
+- Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
+- Generate a concise one-sentence description of the deck in Thai (using English terms only when necessary and widely understood).
+
+Output **only** a JSON array—no commentary and absolutely nothing else:
 
 {
   "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
   "description": "คำอธิบายสั้นๆ ในภาษาไทย",
   "cards": [
-    { "question": "...", 
-     "answer": "...", 
-     "keyword": "...", 
-     "needs_image": true // or false
-     },
+    { "question": "...",
+      "answer": "...",
+      "keyword": "...",
+      "needs_image": true // or false
+    },
     ...
   ]
 }
 
-Rules for keyword:
-- 1-3 English words or short phrase (e.g. “photosynthesis diagram”) for searching images. The the keywords you use has to be able to serach for a good representation answer of the question make sure the user or visual learners will be able to learn as good as possible like diagrams, etc. I want you to think of visual learners and their needs for the serach keyword.
-- If you decided that needs_image is false, keyword can be empty or omitted.
-
+Refined Rules for Keyword:
+- If needs_image is true: Provide a 1-3 word English keyword or short phrase specifically designed for an image search that directly and clearly illustrates the answer or the core concept of the question. Think like a visual learner: what would they type into a search engine to instantly grasp this? Prioritize keywords that would yield diagrams, labeled illustrations, or clear visual representations over abstract terms.
+- If needs_image is false: The keyword field should be empty or omitted.
 Steps:
-1) Generate “Remembering” cards (factual Q&A).  
-2) Generate “Understanding” cards (conceptual Q&A).  
-3) For each, set needs_image to true **only** when a visual cue clearly maps to the concept.  
-4) Provide keyword only when needs_image=true.
+- Generate “Remembering” cards (factual recall Q&A).
+- Generate “Understanding” cards (conceptual comprehension Q&A).
+- For each card, determine if a visual is crucial for understanding or visualizing the answer. Set needs_image to true only when a visual representation would provide significant clarity.
+- If needs_image is true, provide a targeted keyword (1-3 English words) optimized for visual search.
 
 --- BEGIN TEXT ---
 ${text}
