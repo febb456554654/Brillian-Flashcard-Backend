@@ -147,25 +147,38 @@ ${text}
     };
 
      // → Generate the stylized summary *once* at creation
-    const summaryPrompt = `You are an expert educational writer and copyeditor, writing in clear, engaging Thai (except that any domain-specific English words or acronyms must be kept in English).
+    const summaryPrompt = `You are an expert educational writer and copyeditor, writing in clear, engaging Thai (except that any domain-specific English words or acronyms must be kept in English). Your goal is to create a concise **1-5 minute** study summary of the provided text. The output must be a self-contained chunk of **semantic** HTML (using only class attributes for styling, no inline styles).
 
-Your task is to read the full text of the PDF (inserted below) and produce a **1-5 minute** study summary, the output must be a self-contained chunk of **semantic** HTML (no inline styles) that uses:
+The HTML structure should adhere to the following:
 
-- an '<h1>' for the main title  
-- '<h2>' for each major section  
-- '<p>' for ordinary paragraphs  
-- '<ul><li>' lists for bullet points  
-- '<strong>' to highlight key terms (especially flashcard keywords)  
-- '<em>' for any side notes or emphasis  
+- Use an `<h1>` tag for the main title of the summary.
+- Divide the content into logical sections, each marked with an `<h2>` tag.
+- Present ordinary text within `<p>` tags for easy readability.
+- Utilize `<ul>` and `<li>` tags to create bulleted lists for key points.
+- Emphasize crucial terms and potential flashcard keywords using the `<strong>` tag.
+- Use the `<em>` tag for any supplementary notes or emphasis you deem necessary.
 
-**Do not** output any plain-text lists or Markdown.  **Do not** wrap your HTML in '<html>'/'<body>'—just the snippet.  **Do not** return any commentary or “explanatory” lines.
+**Crucially, the visual presentation should be enhanced through the use of CSS classes.** While you won't define the CSS itself, apply relevant and descriptive class names to the HTML elements to suggest their intended styling. Think about classes that would improve readability and organization. For example, you might use classes like 'main-title', 'section-heading', 'important-term', 'list-item', 'emphasis-note', etc.
 
-It should be fully stylized and focused on readability with html styling. Return something along the lines of:
+**Do not** output any plain-text lists or Markdown. **Do not** wrap your HTML in `<html>` or `<body>` tags—only the HTML snippet itself. **Do not** include any commentary or explanatory text outside the HTML.
 
-<h1>...</h1><p>...<strong>...</strong></p><h2>...</h2><ul><li>...</li>...</ul>...
+Aim for a visually appealing and easily scannable summary entirely in Thai (with necessary English terms).
 
-But feel free to choose the styling that you think fits the topic and readability best.
-Ensure the entire summary is in Thai (aside from any necessary English technical terms or acronyms), and keep each section concise and scannable.
+Example of the desired output structure (including potential class names):
+
+<h1 class="main-title">บทสรุปเรื่องหิน</h1>
+<p>หินเกิดขึ้นจากการรวมตัวและแข็งตัวของแร่ธาตุต่างๆ... <strong class="important-term">หินอัคนี</strong>, <strong class="important-term">หินตะกอน</strong>, และ <strong class="important-term">หินแปร</strong>...</p>
+<h2 class="section-heading">หินอัคนี</h2>
+<p>เกิดจากการเย็นตัวและแข็งตัวของหินหนืด...</p>
+<ul class="key-points">
+  <li class="list-item"><strong>หินภูเขาไฟ</strong>: ลาวา...</li>
+  <li class="list-item"><strong>หินอัคนีแทรกซ้อน</strong>: แมกมา...</li>
+</ul>
+<h2 class="section-heading">หินตะกอน</h2>
+<p>เกิดจากการทับถมของตะกอน...</p>
+<h2 class="section-heading">หินแปร</h2>
+<p>เกิดจากการเปลี่ยนแปลงสภาพ...</p>
+<p class="emphasis-note"><em>การแปรสภาพสัมผัส...</em></p>
 
 BEGIN RAW TEXT
 ${text}
