@@ -55,7 +55,7 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
 
     const prompt = `You are an expert educator specializing in creating effective learning materials. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
 
-For each flashcard, carefully consider whether a visual (photo, diagram, illustration, or icon) would **significantly enhance comprehension and memorability**, enabling the user to easily visualize the concept or the answer. The goal is to provide keywords that will yield effective visual search results, directly representing the concept or answer.
+For each flashcard, carefully consider whether a visual (photo, diagram, illustration, or icon) would **significantly enhance comprehension and memorability** (true or false), enabling the user to easily visualize the concept or the answer. The goal is to provide keywords that will yield effective visual search results, directly representing the concept or answer.
 
 - Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
 - Generate a concise one-sentence description of the deck in Thai (using English terms only when necessary and widely understood).
@@ -76,7 +76,7 @@ Output **only** a JSON array—no commentary and absolutely nothing else:
     { "question": "...",
       "answer": "...",
       "keyword": "...",
-      "needs_image": true // or false,
+      "needs_image": false // or true,
       "taxonomy": "Remembering" // Add this taxonomy field ("Remembering", "Understanding", "Applying")
     },
     ...
