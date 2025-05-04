@@ -151,16 +151,16 @@ ${text}
 
 The HTML structure should adhere to the following:
 
-- Use an `<h1>` tag for the main title of the summary.
-- Divide the content into logical sections, each marked with an `<h2>` tag.
-- Present ordinary text within `<p>` tags for easy readability.
-- Utilize `<ul>` and `<li>` tags to create bulleted lists for key points.
-- Emphasize crucial terms and potential flashcard keywords using the `<strong>` tag.
-- Use the `<em>` tag for any supplementary notes or emphasis you deem necessary.
+- Use an '<h1>' tag for the main title of the summary.
+- Divide the content into logical sections, each marked with an '<h2>' tag.
+- Present ordinary text within '<p>' tags for easy readability.
+- Utilize '<ul>' and '<li>' tags to create bulleted lists for key points.
+- Emphasize crucial terms and potential flashcard keywords using the '<strong>' tag.
+- Use the '<em>' tag for any supplementary notes or emphasis you deem necessary.
 
 **Crucially, the visual presentation should be enhanced through the use of CSS classes.** While you won't define the CSS itself, apply relevant and descriptive class names to the HTML elements to suggest their intended styling. Think about classes that would improve readability and organization. For example, you might use classes like 'main-title', 'section-heading', 'important-term', 'list-item', 'emphasis-note', etc.
 
-**Do not** output any plain-text lists or Markdown. **Do not** wrap your HTML in `<html>` or `<body>` tags—only the HTML snippet itself. **Do not** include any commentary or explanatory text outside the HTML.
+**Do not** output any plain-text lists or Markdown. **Do not** wrap your HTML in '<html>' or '<body>' tags—only the HTML snippet itself. **Do not** include any commentary or explanatory text outside the HTML.
 
 Aim for a visually appealing and easily scannable summary entirely in Thai (with necessary English terms).
 
