@@ -60,7 +60,7 @@ For each flashcard, decide **if a visual (photo, diagram, or icon) would signifi
 - Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
 - Generate a one-sentence description of the deck (in Thai, aside from any English terms).
 
-Output **only** this JSON array—no commentary:
+Output **only** this JSON array—no commentary and absolutely nothing else:
 
 {
   "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
