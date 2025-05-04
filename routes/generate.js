@@ -66,7 +66,7 @@ Key Guidelines:
 - Deck Title: Generate a short title (1-3 words) prefixed by an appropriate emoji.
 - Deck Description: Provide a concise one-sentence description of the deck in Thai. Use English terms only when necessary.
 
-Output Format: Your output must only be a JSON array, with no commentary or additional explanation (So don't add any '''json to your outupt). Just output in the following format:
+Output Format: Your output must **only** be a raw JSON array with the following structure, and no additional text or markdown with no formatting tags:
 
 {
   "title": "emoji_prefix ชื่อสั้นๆ",
