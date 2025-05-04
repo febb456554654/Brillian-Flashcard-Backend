@@ -93,7 +93,7 @@ The number of flashcards of each type will vary from the material (eg., An Engli
 After creating the flashcards, ensure to include the Bloom's Taxonomy label for each card.
 
 Visuals:
-- For each card, determine if a visual is crucial for understanding or visualizing the answer ONLY if needed. Set needs_image to true only when a visual representation would provide significant clarity.
+- For each card, determine if a visual is crucial for understanding or visualizing the answer ONLY if you think it is absolutely needed. Set needs_image to true only when a visual representation would provide significant clarity.
 - If needs_image is true, provide a targeted keyword (1-3 English words) optimized for visual search.
 
 --- BEGIN TEXT ---
