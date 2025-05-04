@@ -76,7 +76,7 @@ Output Format: Your output must only be a JSON array, with no commentary or addi
       "question": "...",
       "answer": "...",
       "keyword": "...",
-      "needs_image": false  // or true,
+      "needs_image": false // or true,
       "taxonomy": "Remembering"  // (Choose: "Remembering", "Understanding", "Applying")
     },
     ...
@@ -91,8 +91,8 @@ Process:
 After creating the flashcards, ensure to include the Bloom's Taxonomy label for each card.
 
 Visuals:
-Only mark needs_image: true when a visual significantly aids in understanding or visualization.
-Use targeted keywords for images when needed to assist in finding diagrams or clear visual representations.
+- For each card, determine if a visual is crucial for understanding or visualizing the answer ONLY if needed. Set needs_image to true only when a visual representation would provide significant clarity.
+- If needs_image is true, provide a targeted keyword (1-3 English words) optimized for visual search.
 
 --- BEGIN TEXT ---
 ${text}
