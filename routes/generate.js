@@ -67,7 +67,7 @@ For each flashcard, carefully classify it into one of the three Bloom's Taxonomy
 
 After generating the flashcards, **add a Bloom's Taxonomy label** (either "Remembering", "Understanding", or "Applying") for each flashcard.
 
-Output **only** a JSON array—no commentary and absolutely nothing else:
+The most important thing is that you output **only** a JSON array—no commentary and absolutely nothing else:
 
 {
   "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
