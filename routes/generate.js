@@ -88,6 +88,8 @@ Process:
 - Understanding: Generate cards that test comprehension (e.g., explanations, interpretations).
 - Applying: Generate cards that test the ability to apply knowledge in real-world scenarios. Include a practical example or problem to solve.
 
+The number of flashcards of each type will vary from the material (eg., An English vocabulary worksheet would have many more remembering cards than understanding or Applying, Or subjects like Biology that requires more of remembering and understanding)
+**Create as many flashcards as needed to cover the full material.**
 After creating the flashcards, ensure to include the Bloom's Taxonomy label for each card.
 
 Visuals:
