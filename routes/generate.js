@@ -63,7 +63,7 @@ For each flashcard, carefully consider whether a visual (photo, diagram, illustr
 For each flashcard, carefully classify it into one of the three Bloom's Taxonomy categories:
 - Remembering: Recall facts, terms, and definitions.
 - Understanding: Comprehending, explaining, or interpreting concepts.
-- Applying: Using knowledge in practical contexts.
+- Applying: Using knowledge in practical contexts. Give Example Scenarios.
 
 After generating the flashcards, **add a Bloom's Taxonomy label** (either "Remembering", "Understanding", or "Applying") for each flashcard.
 
