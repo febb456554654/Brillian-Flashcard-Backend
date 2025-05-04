@@ -53,7 +53,7 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const buffer = fs.readFileSync(req.file.path);
     const { text } = await pdf(buffer);
 
-    const prompt = `You are an expert educator specializing in creating effective learning materials. From the input text below, generate a set of flashcards in Thai (English is fine for English-specific words or vocabulary like vocabulary worksheets) using Bloom's Taxonomy.
+    const prompt = `You are an expert educator specializing in creating effective learning materials. From the input text below, generate a set of flashcards in Thai using Bloom's Taxonomy.
 For each flashcard, classify it into one of the following categories:
 - Remembering: Recall facts, terms, and definitions.
 - Understanding: Comprehend, explain, or interpret concepts.
