@@ -60,6 +60,13 @@ For each flashcard, carefully consider whether a visual (photo, diagram, illustr
 - Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
 - Generate a concise one-sentence description of the deck in Thai (using English terms only when necessary and widely understood).
 
+For each flashcard, carefully classify it into one of the three Bloom's Taxonomy categories:
+- Remembering: Recall facts, terms, and definitions.
+- Understanding: Comprehending, explaining, or interpreting concepts.
+- Applying: Using knowledge in practical contexts.
+
+After generating the flashcards, **add a Bloom's Taxonomy label** (either "Remembering", "Understanding", or "Applying") for each flashcard.
+
 Output **only** a JSON array—no commentary and absolutely nothing else:
 
 {
@@ -69,7 +76,8 @@ Output **only** a JSON array—no commentary and absolutely nothing else:
     { "question": "...",
       "answer": "...",
       "keyword": "...",
-      "needs_image": true // or false
+      "needs_image": true // or false,
+      "taxonomy": "Remembering" // Add this taxonomy field ("Remembering", "Understanding", "Applying")
     },
     ...
   ]
@@ -124,6 +132,7 @@ ${text}
           keyword:    c.keyword,
           needs_image:c.needs_image,
           image:      img,
+          taxonomy: c.taxonomy,
           point:      0,
           repetitions:0,
           interval:   0,
