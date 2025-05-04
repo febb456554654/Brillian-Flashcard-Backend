@@ -53,44 +53,46 @@ router.post('/generate-deck', upload.single('pdf'), async (req, res) => {
     const buffer = fs.readFileSync(req.file.path);
     const { text } = await pdf(buffer);
 
-    const prompt = `You are an expert educator specializing in creating effective learning materials. From the input text below, generate flashcards in Thai using Bloom's Taxonomy.
-
-For each flashcard, carefully consider whether a visual (photo, diagram, illustration, or icon) would **significantly enhance comprehension and memorability** (true or false), enabling the user to easily visualize the concept or the answer. The goal is to provide keywords that will yield effective visual search results, directly representing the concept or answer.
-
-- Generate a very short deck title (1-3 words) prefixed by an appropriate emoji.
-- Generate a concise one-sentence description of the deck in Thai (using English terms only when necessary and widely understood).
-
-For each flashcard, carefully classify it into one of the three Bloom's Taxonomy categories:
+    const prompt = `You are an expert educator specializing in creating effective learning materials. From the input text below, generate a set of flashcards in Thai using Bloom's Taxonomy.
+For each flashcard, classify it into one of the following categories:
 - Remembering: Recall facts, terms, and definitions.
-- Understanding: Comprehending, explaining, or interpreting concepts.
-- Applying: Using knowledge in practical contexts. Give Example Scenarios.
+- Understanding: Comprehend, explain, or interpret concepts.
+- Applying: Apply knowledge in practical, real-world scenarios.
 
-After generating the flashcards, **add a Bloom's Taxonomy label** (either "Remembering", "Understanding", or "Applying") for each flashcard.
+Key Guidelines:
+- Visuals: For each flashcard, evaluate whether a visual (photo, diagram, illustration, or icon) would significantly enhance comprehension and memorability.
+- If a visual is needed, choose a 1-3 word keyword that would work well for an image search to help the user visualize the concept or answer. Prioritize keywords that yield diagrams, labeled illustrations, or clear visual representations.
+- If no visual is needed, omit the keyword or leave it blank.
+- Deck Title: Generate a short title (1-3 words) prefixed by an appropriate emoji.
+- Deck Description: Provide a concise one-sentence description of the deck in Thai. Use English terms only when necessary.
 
-The most important thing is that you output **only** a JSON array—no commentary and absolutely nothing else (no '''json) just purely the format below:
+Output Format: Your output must only be a JSON array, with no commentary or additional explanation. Use the following format:
 
 {
-  "title": "emoji prefix ตามด้วยชื่อสั้นๆ",
-  "description": "คำอธิบายสั้นๆ ในภาษาไทย",
+  "title": "emoji_prefix ชื่อสั้นๆ",
+  "description": "คำอธิบายสั้นๆ ภาษาไทย",
   "cards": [
-    { "question": "...",
+    {
+      "question": "...",
       "answer": "...",
       "keyword": "...",
-      "needs_image": false // or true,
-      "taxonomy": "Remembering" // Add this taxonomy field ("Remembering", "Understanding", "Applying")
+      "needs_image": false  // or true,
+      "taxonomy": "Remembering"  // (Choose: "Remembering", "Understanding", "Applying")
     },
     ...
   ]
 }
 
-Refined Rules for Keyword:
-- If needs_image is true: Provide a 1-3 word English keyword or short phrase specifically designed for an image search that directly and clearly illustrates the answer or the core concept of the question. Think like a visual learner: what would they type into a search engine to instantly grasp this? Prioritize keywords that would yield diagrams, labeled illustrations, or clear visual representations over abstract terms.
-- If needs_image is false: The keyword field should be empty or omitted.
-Steps:
-- Generate “Remembering” cards (factual recall Q&A).
-- Generate “Understanding” cards (conceptual comprehension Q&A).
-- For each card, determine if a visual is crucial for understanding or visualizing the answer. Set needs_image to true only when a visual representation would provide significant clarity.
-- If needs_image is true, provide a targeted keyword (1-3 English words) optimized for visual search.
+Process:
+- Remembering: Generate cards that test factual recall (e.g., terms, definitions).
+- Understanding: Generate cards that test comprehension (e.g., explanations, interpretations).
+- Applying: Generate cards that test the ability to apply knowledge in real-world scenarios. Include a practical example or problem to solve.
+
+After creating the flashcards, ensure to include the Bloom's Taxonomy label for each card.
+
+Visuals:
+Only mark needs_image: true when a visual significantly aids in understanding or visualization.
+Use targeted keywords for images when needed to assist in finding diagrams or clear visual representations.
 
 --- BEGIN TEXT ---
 ${text}
