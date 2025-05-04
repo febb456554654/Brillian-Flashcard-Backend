@@ -173,7 +173,7 @@ END RAW TEXT
 `;
 
     const sumResp = await together.chat.completions.create({
-      model: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
+      model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
       messages: [{ role: 'user', content: summaryPrompt }],
       max_tokens: 1500
     });
