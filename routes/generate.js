@@ -197,7 +197,7 @@ END RAW TEXT
 `;
 
     const sumResp = await together.chat.completions.create({
-      model: 'Qwen/Qwen3-235B-A22B-fp8-tput',
+      model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
       messages: [{ role: 'user', content: summaryPrompt }],
       max_tokens: 1500
     });
