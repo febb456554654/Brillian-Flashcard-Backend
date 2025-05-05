@@ -1,5 +1,4 @@
-// lib/fetchImage.js
-require('dotenv').config(); // only if you rely on a local .env in dev
+require('dotenv').config(); 
 
 const axios = require('axios');
 const API_KEY = process.env.GOOGLE_API_KEY;
@@ -20,9 +19,9 @@ module.exports = async function fetchImage(keyword) {
         q:         keyword,
         searchType:'image',
         num:       1,
-        safe:      'high',         // filter adult content
-        imgType:   'photo',        // get photos, not clip art
-        imgSize:   'medium',       // a good mid‑size image
+        safe:      'high',         
+        imgType:   'photo',       
+        imgSize:   'medium',      
       },
       timeout: 5000,
     });

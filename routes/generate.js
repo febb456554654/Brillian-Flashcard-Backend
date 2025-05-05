@@ -15,14 +15,12 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const upload = multer({ dest: uploadDir });
 
-// path to decks.json in your React app
 const JSON_PATH = path.resolve(__dirname, '../decks.json');
 const loadDecks = () => JSON.parse(fs.readFileSync(JSON_PATH, 'utf8'));
 const saveDecks = (data) => fs.writeFileSync(JSON_PATH, JSON.stringify(data, null, 2));
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
-// SM-2 logic with 3 button
 function sm2(card, quality) {
   if (quality < 3) {
     card.repetitions = 0;
@@ -157,7 +155,6 @@ ${text}
       cards
     };
 
-     // → Generate the stylized summary *once* at creation
     const summaryPrompt = `You are an expert educational writer and copyeditor, writing in clear, engaging Thai (except that any domain-specific English words or acronyms must be kept in English). Your goal is to create a concise **1-5 minute** study summary of the provided text. The output must be a self-contained chunk of **semantic** HTML (using only class attributes for styling, no inline styles).
 
 The HTML structure should adhere to the following:
@@ -206,7 +203,7 @@ END RAW TEXT
     decks.push(newDeck);
     saveDecks(decks);
 
-    fs.unlink(req.file.path, () => {}); // clean temp file
+    fs.unlink(req.file.path, () => {}); 
     res.json(newDeck);
   } catch (err) {
     console.error('generate-deck error:', err);
@@ -221,7 +218,6 @@ router.post('/explanation', async (req, res) => {
       return res.status(400).json({ error: "Missing question or answer." });
     }
 
-    // Build a prompt for the AI explanation
     const prompt = `
 You are an expert educator that speaks Thai. Your task is to provide a **clear and insightful explanation in Thai** to help students deeply understand the concept behind the flashcard below.
 
@@ -238,14 +234,13 @@ Flashcard Answer: ${answer}
 Output the explanation in Thai.
     `;
 
-    // Call the Together API with your prompt
     const response = await together.chat.completions.create({
       model: 'meta-llama/Llama-4-Scout-17B-16E-Instruct',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 250,
     });
 
-    // Extract and clean up the explanation text
+
     const explanation = response.choices[0].message.content.trim();
     res.json({ explanation });
   } catch (err) {
@@ -254,7 +249,7 @@ Output the explanation in Thai.
   }
 });
 
-// GET /api/summarize-deck/:id
+
 router.get('/summarize-deck/:id', (req, res) => {
   const decks = loadDecks();
   const deck  = decks.find(d => d.id === req.params.id);
@@ -262,7 +257,7 @@ router.get('/summarize-deck/:id', (req, res) => {
   return res.json({ summaryHtml: deck.summaryHtml || '' });
 });
 
-// helper: seed SM-2 fields + optional image
+
 async function hydrateCard(c) {
   const img = c.needs_image ? await fetchImage(c.keyword) : null;
   return {
@@ -286,7 +281,7 @@ router.post('/related-cards', async (req, res) => {
     if (!question || !answer)
       return res.status(400).json({ error: 'Missing question or answer' });
 
-    /* ---------- 1. Ask the LLM for extra cards ---------- */
+   
     const prompt = `
 You are an expert educator. From the input text below, generate flashcards in Thai using Bloom's Taxonomy (Remember / Understand / Apply).
 For each flashcard, decide **if a visual (photo, diagram, or icon) would significantly boost understanding or that will allow the user to be able to visualize the concept in their heads.
@@ -328,14 +323,13 @@ A: ${answer}
     catch { throw new Error('LLM did not return valid JSON'); }
 
     if (Array.isArray(raw)) {
-      // OK
+      
     } else if (raw.cards && Array.isArray(raw.cards)) {
-      raw = raw.cards;               // model used a wrapper object
+      raw = raw.cards;              
     } else {
       throw new Error('LLM did not return an array');
     }
 
-    /* ---------- 2. Enrich each card ---------- */
     const cards = await Promise.all(raw.map(hydrateCard));
 
     res.json({ cards });
