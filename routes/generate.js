@@ -102,7 +102,7 @@ ${text}
 `;
 
     const response = await together.chat.completions.create({
-      model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
+      model: 'Qwen/Qwen3-235B-A22B-fp8-tput',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 4096
     });
@@ -198,7 +198,7 @@ END RAW TEXT
 `;
 
     const sumResp = await together.chat.completions.create({
-      model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
+      model: 'Qwen/Qwen3-235B-A22B-fp8-tput',
       messages: [{ role: 'user', content: summaryPrompt }],
       max_tokens: 1500
     });
