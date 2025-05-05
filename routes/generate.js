@@ -89,7 +89,6 @@ Process:
 - Applying: Generate cards that test the ability to apply knowledge in real-world scenarios. Include a practical example or problem to solve.
 
 The number of flashcards of each type will vary from the material (eg., An English vocabulary worksheet would have many more remembering cards than understanding or Applying, Or subjects like Biology that requires more of remembering and understanding)
-**Create as many flashcards as needed to cover the full material.**
 After creating the flashcards, ensure to include the Bloom's Taxonomy label for each card.
 
 Visuals:
@@ -102,7 +101,7 @@ ${text}
 `;
 
     const response = await together.chat.completions.create({
-      model: 'Qwen/Qwen3-235B-A22B-fp8-tput',
+      model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 4096
     });
