@@ -63,6 +63,7 @@ Key Guidelines:
 - If no visual is needed, omit the keyword or leave it blank.
 - Deck Title: Generate a short title (1-3 words) prefixed by an appropriate emoji.
 - Deck Description: Provide a concise one-sentence description of the deck in Thai. Use English terms only when necessary.
+- Create as many flashcards as you can to cover ALL the information in the TEXT.
 
 Output Format: Your output must **only** be a raw JSON array with the following structure, and no additional text or markdown with no formatting tags:
 
@@ -101,7 +102,7 @@ ${text}
     const response = await together.chat.completions.create({
       model: 'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 4096
+      max_tokens: 10000
     });
 
     let cardsRaw;
