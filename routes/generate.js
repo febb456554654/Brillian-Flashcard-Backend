@@ -65,7 +65,7 @@ Key Guidelines:
 - Deck Description: Provide a concise one-sentence description of the deck in Thai. Use English terms only when necessary.
 - Create as many flashcards as you can to cover ALL the information in the TEXT.
 
-Output Format: Your output must **only** be a raw JSON array with the following structure, and no additional text or markdown with no formatting tags:
+Output Format: Your output must **only** be a raw JSON array with the following structure, and no additional text or markdown with no formatting tags (don't add any '''json tag) :
 
 {
   "title": "emoji_prefix ชื่อสั้นๆ",
