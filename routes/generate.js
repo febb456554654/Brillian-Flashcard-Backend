@@ -63,9 +63,9 @@ Key Guidelines:
 - If no visual is needed, omit the keyword or leave it blank.
 - Deck Title: Generate a short title (1-3 words) prefixed by an appropriate emoji.
 - Deck Description: Provide a concise one-sentence description of the deck in Thai. Use English terms only when necessary.
-- Create as many flashcards as you can to cover ALL the information in the TEXT.
+- Create only 3 flashcards no matter wht happens.
 
-Output Format: Your output must **only** be a raw JSON array with the following structure, and no additional text or markdown with no formatting tags (don't add any '''json tag) :
+Output Format: Your output must **only** be a raw JSON array with the following structure, and no additional text or markdown with no formatting tags (don't add any '''json tag) and don't forget that there should only be 3 flashcards:
 
 {
   "title": "emoji_prefix ชื่อสั้นๆ",
